@@ -1,7 +1,5 @@
 [project]
-org-name= "hpmou"
+org-name= "kauri"
 version= "0.1.0"
 
 [dependencies]
-[central]
-accesstoken="a0fd3b5a-5799-3d57-8c47-3aee7d8972e4"
