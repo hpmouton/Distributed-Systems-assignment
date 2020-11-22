@@ -1,12 +1,12 @@
 import ballerina/grpc;
-import ballerina/log;
 import ballerina/io;
 import ballerina/lang.'int;
-public function main (string... args) {
+import ballerina/log;
+public function main(string... args) {
 
 
-    caliBlockingClient blockingEp = new("http://localhost:9090");
-    caliBlockingClient nonblockingEp = new("http://localhost:9090");
+    caliBlockingClient blockingEp = new ("http://localhost:9090");
+    caliBlockingClient nonblockingEp = new ("http://localhost:9090");
 
     io:println("******** Welcome To CALI *********");
     io:println("1.Add A Record");
@@ -18,22 +18,25 @@ public function main (string... args) {
     io:println("**********************************");
 
     string input = io:readln("Enter A Number: ");
-    if(input =="1" ){
+    if (input == "1") {
         addRecord(blockingEp);
     }
-    if(input =="2"){
+    if (input == "2") {
         updateRecord(blockingEp);
 
     }
-    if(input == "3"){
+    if (input == "3") {
         readRecord(blockingEp);
+    }
+    if (input == "4") {
+        readRecordWithKV(blockingEp);
     }
 
 }
 
-function addRecord(caliBlockingClient block){
-//Adding A Record
-Record newRecord={};
+function addRecord(caliBlockingClient block) {
+    //Adding A Record
+    Record newRecord = {};
     log:printInfo("*********Adding A New Record *********");
     string date = io:readln("Enter The Date: ");
     string number = io:readln("Enter The number Of Artists: ");
@@ -48,8 +51,8 @@ Record newRecord={};
 
     int|error count = 'int:fromString(number);
     if (count is error) {
-    io:print("invalid Entry");
-    main();
+        io:print("invalid Entry");
+        main();
     } else {
         foreach int i in 1 ... count {
             io:println("Artist: ", i);
@@ -63,38 +66,38 @@ Record newRecord={};
 
         }
         io:println("********* Song Details ********");
-            string title = io:readln("Enter Title: ");
-            string genre = io:readln("Enter Genre: ");
-            string plat = io:readln("Enter Platform: ");
+        string title = io:readln("Enter Title: ");
+        string genre = io:readln("Enter Genre: ");
+        string plat = io:readln("Enter Platform: ");
 
-            newRecord.songs.push({title: title, genre: genre, platform: plat});
-
-
+        newRecord.songs.push({title: title, genre: genre, platform: plat});
 
 
-   var res = block ->addRecord(newRecord);
-if(res is grpc:Error){
-io:print("Error!!!");
-main();
-}else{
-    io:print("\nRecord Created");
-    io:print("\nRecord Detials");
-    io:print(res);
-    io:print("\n\n");
-    main();
 
-}
+
+        var res = block->addRecord(newRecord);
+        if (res is grpc:Error) {
+            io:print("Error!!!");
+            main();
+        } else {
+            io:print("\nRecord Created");
+            io:print("\nRecord Detials");
+            io:print(res);
+            io:print("\n\n");
+            main();
+
+        }
     }
 }
 
 
 
 
-function updateRecord(caliBlockingClient block){
+function updateRecord(caliBlockingClient block) {
     Record newRecord = {};
     io:print("\n ********* Update Record *********");
 
-string date = io:readln("Enter The Date: ");
+    string date = io:readln("Enter The Date: ");
     string number = io:readln("Enter The number Of Artists: ");
     string recKey = io:readln("Enter Record Key: ");
     string recVer = io:readln("Enter The Record Version: ");
@@ -107,8 +110,8 @@ string date = io:readln("Enter The Date: ");
 
     int|error count = 'int:fromString(number);
     if (count is error) {
-    io:print("invalid Entry");
-    main();
+        io:print("invalid Entry");
+        main();
     } else {
         foreach int i in 1 ... count {
             io:println("Artist: ", i);
@@ -122,44 +125,72 @@ string date = io:readln("Enter The Date: ");
 
         }
         io:println("********* Song Details ********");
-            string title = io:readln("Enter Title: ");
-            string genre = io:readln("Enter Genre: ");
-            string plat = io:readln("Enter Platform: ");
+        string title = io:readln("Enter Title: ");
+        string genre = io:readln("Enter Genre: ");
+        string plat = io:readln("Enter Platform: ");
 
-            newRecord.songs.push({title: title, genre: genre, platform: plat});
-
-
+        newRecord.songs.push({title: title, genre: genre, platform: plat});
 
 
-   var res = block ->addRecord(newRecord);
-if(res is grpc:Error){
-io:print("Error!!!");
-main();
-}else{
-    io:print("\nRecord Updated");
-    io:print("\nRecord Detials");
-    io:print(res);
-    io:print("\n\n");
-    main();
 
-}
+
+        var res = block->updateRecord(newRecord);
+        if (res is grpc:Error) {
+            io:print("Error!!!");
+            main();
+        } else {
+            io:print("\nRecord Updated");
+            io:print("\nRecord Detials");
+            io:print(res);
+            io:print("\n\n");
+            main();
+
+        }
     }
 
 
 }
 
-function readRecord(caliBlockingClient block){
-readRecordWithKey newKey = {recordKey: "12"};
-    var readWithKeyResponse = block->readWithKey(newKey);
-    if (readWithKeyResponse is grpc:Error) {
-        io:println("[!] ERROR [!] A CONNECTION COULD NOT BE ESTABLISHED");
+function readRecord(caliBlockingClient block) {
+    readRecordWithKey newRecord = {};
+    log:printInfo("*********Reading A Record With Key*********");
+    string recordK = io:readln("Enter The Key: ");
+
+    newRecord.recordKey = recordK;
+
+    var res = block->readWithKey(newRecord);
+    if (res is grpc:Error) {
+        io:print("Error!!!");
+        main();
     } else {
+        //Show The Output
         io:println("[!] Result Of Search: \n");
-        io:println(readWithKeyResponse, "\n\n\n");
+        io:println(res, "\n\n\n");
+        main();
 
     }
+}
 
+function readRecordWithKV(caliBlockingClient block) {
+    readRecordWithKeyVer newRecord = {};
+    log:printInfo("*********Reading A Record With Key*********");
+    string recordK = io:readln("Enter The Key: ");
+    string recordV = io:readln("Enter The Version: ");
 
+    newRecord.recordKey = recordK;
+    newRecord.recordVersion = recordV;
+
+    var res = block->readWithKeyAndVersion(newRecord);
+    if (res is grpc:Error) {
+        io:print("Error!!!");
+        main();
+    } else {
+        //Show The Output
+        io:println("[!] Result Of Search: \n");
+        io:println(res, "\n\n\n");
+        main();
+
+    }
 }
 
 

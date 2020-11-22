@@ -12,19 +12,6 @@ service cali on ep {
 
 
         // You should return a helloResponse
-        error? result = ();
-        string rp = "";
-        io:print("Client Connected");
-        helloResponse response = {res:  "********* Welcome To Cali ********* \n1.Add A Record\n2.Read A Record\n3.Update A Record\n"};
-        string choice = io:readln("Enter choice 1 - 3: ");
-       string c = <string>choice;
-       if(c == "1"){
-rp ="you chose 1";
-       }
-       check caller->send(response);
-       check caller->send(choice);
-       check caller->send(rp);
-       check caller->complete();
 
     }
     resource function addRecord(grpc:Caller caller, Record value) {
