@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+
+
+service cali{
+  rpc greeting(helloRequest) returns (helloResponse);
+  //Add Record
+  rpc addRecord(Record) returns (response);
+  //Update Record
+  rpc updateRecord(Record) returns (response);
+  //Get Record With Key
+  rpc readWithKey(readRecordWithKey) returns (Record);
+  //Get Record With Key And Version
+  rpc readWithKeyAndVersion(versionAndKey) returns (Record);
+  //Get Record With Criteria
+  rpc readRecordWithCriterion(searchRecord) returns (Record);
+}
+message helloRequest{
+  string menu = 1;
+}
+message helloResponse{
+  string res =1;
+}
+
+message Record{
+    string date = 1;
+    string number = 2;
+    string recordKey = 3;
+    string recordVersion = 4;
+
+    message Artist {
+    string name =1;
+    enum Member {
+    YES = 0;
+    NO = 1;
+    }
+    Member member = 2;
+    }
+
+    string band = 5;
+
+    message Song {
+        string title =1;
+        string genre = 2;
+        string platform =3;
+    }
+
+  repeated Song songs = 6;
+  repeated Artist artists = 7;
+
+}
+
+//Update Record
+message update{
+  string recordKey =1;
+  string recordVersion = 2;
+  Record record = 3;
+}
+
+message versionAndKey {
+  string recordKey = 1;
+  string recordVersion = 2;
+}
+
+//Get Record With Key
+message readRecordWithKey{
+  string recordKey = 1;
+}
+
+//Get Record With Key And Version
+message readRecordWithKeyVer{
+  string recordKey = 1;
+  string recordVersion = 2;
+}
+
+//Get Record With Criteria
+message searchRecord{
+  repeated Record records = 1;
+}
+
+//Dummy Method For Returning Nothing
+message response{
+    string output = 1;
+}
