@@ -6,7 +6,6 @@ public function main(string... args) {
 
 
     caliBlockingClient blockingEp = new ("http://localhost:9090");
-    caliBlockingClient nonblockingEp = new ("http://localhost:9090");
 
     io:println("******** Welcome To CALI *********");
     io:println("1.Add A Record");
@@ -49,12 +48,12 @@ function addRecord(caliBlockingClient block) {
     newRecord.recordVersion = recVer;
 
 
-    int|error count = 'int:fromString(number);
-    if (count is error) {
+    int|error counter = 'int:fromString(number);
+    if (counter is error) {
         io:print("invalid Entry");
         main();
     } else {
-        foreach int i in 1 ... count {
+        foreach int i in 1 ... counter {
             io:println("Artist: ", i);
             string name = io:readln("Enter Name of Artist: ");
             string member = io:readln("Is the Artist a member?: ");
@@ -108,12 +107,12 @@ function updateRecord(caliBlockingClient block) {
     newRecord.recordVersion = recVer;
 
 
-    int|error count = 'int:fromString(number);
-    if (count is error) {
+    int|error counter = 'int:fromString(number);
+    if (counter is error) {
         io:print("invalid Entry");
         main();
     } else {
-        foreach int i in 1 ... count {
+        foreach int i in 1 ... counter {
             io:println("Artist: ", i);
             string name = io:readln("Enter Name of Artist: ");
             string member = io:readln("Is the Artist a member?: ");

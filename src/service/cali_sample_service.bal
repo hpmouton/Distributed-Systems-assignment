@@ -22,28 +22,27 @@ service cali on ep {
         string payload;
         error? result = ();
 
-        //Hashing Record Key
         byte[] hash = value.recordKey.toBytes();
         byte[] hashedKey = crypto:hashMd5(hash);
         string hashedToBase16 = hashedKey.toBase16();
 
         if (recordsMap.hasKey(hashedToBase16)) {
-            payload = "[!] Error: Record Already Exists [!]";
-            //Send Response To Client
+            payload = "Error: Record Already Exists";
+
             result = caller->send(payload);
             result = caller->complete();
         } else {
-            //Store The Values
+
             recordsMap[hashedToBase16] = <@untainted>value;
 
             var jsonValue = typedesc<json>.constructFrom(recordsMap[hashedToBase16]);
             if (jsonValue is error) {
-                //Send Casting Error As Internal Error
+
                 result = caller->sendError(grpc:INTERNAL, <string>jsonValue.detail()["message"]);
             } else {
                 json records = jsonValue;
                 payload = records.toString();
-                //Send Response To The Client
+
                 result = caller->send(payload);
                 result = caller->complete();
             }
@@ -55,25 +54,24 @@ service cali on ep {
         error? result = ();
         string recordVersion = value.recordVersion;
 
-        //Hashing Record Key
         byte[] hash = value.recordKey.toBytes();
         byte[] hashedKey = crypto:hashMd5(hash);
         string hashedToBase16 = hashedKey.toBase16();
 
-        //Find Record That Needs To Be Updated
+
         if (recordsMap.hasKey(hashedToBase16)) {
-            //Update The Existing Order
+
             recordsMap[hashedToBase16] = <@untainted>value;
             payload = "Record " + value.number + " Has Been Successfully Updated. New Version Number Is " + recordVersion;
-            //Send Response To Client
+
             result = caller->send(payload);
             result = caller->complete();
         }
 
-        //If Record Is Not Found
+
         if (!recordsMap.hasKey(hashedToBase16)) {
             payload = "[!] Error: This Record Does Not Exist [!]";
-            //Send Response To Client
+
             result = caller->send(payload);
             result = caller->complete();
         }
@@ -85,14 +83,14 @@ service cali on ep {
         string payload = "";
         error? result = ();
 
-        //Hashing Record Key
+
         byte[] hash = value.recordKey.toBytes();
         byte[] hashedKey = crypto:hashMd5(hash);
         string hashedToBase16 = hashedKey.toBase16();
 
         if (!recordsMap.hasKey(hashedToBase16)) {
-            string? failure = "[!] Error: This Record Does Not Exist [!] \n\n\n";
-            //Send Response To Client
+            string? failure = "Error: This Record Does Not Exist  \n\n";
+
             result = caller->send(failure);
             result = caller->complete();
         }
@@ -101,13 +99,11 @@ service cali on ep {
             if (recordsMap.hasKey(hashedToBase16)) {
                 var jsonValue = typedesc<json>.constructFrom(recordsMap[hashedToBase16]);
                 if (jsonValue is error) {
-                    //Send Casting Error As Internal Error
-                    string? failure = "[!] Error: No Results Found [!] \n\n\n";
+                    string? failure = "Error: No Results Found \n\n";
                     result = caller->send(failure);
                 } else {
                     json records = jsonValue;
                     payload = records.toString();
-                    //Send Response To The Client
                     result = caller->send(payload);
                     result = caller->complete();
                 }
@@ -119,13 +115,11 @@ service cali on ep {
             if (recordsMap.hasKey(hashedToBase16)) {
                 var jsonValue = typedesc<json>.constructFrom(recordsMap[hashedToBase16]);
                 if (jsonValue is error) {
-                    //Send Casting Error As Internal Error
-                    string? failure = "[!] Error: No Results Found [!] \n\n\n";
+                    string? failure = "[!] Error: No Results Found [!] \n\n";
                     result = caller->send(failure);
                 } else {
                     json records = jsonValue;
                     payload = records.toString();
-                    //Send Response To The Client
                     result = caller->send(payload);
                     result = caller->complete();
                 }
@@ -139,30 +133,29 @@ service cali on ep {
         error? result = ();
         string recordVersion = value.recordVersion;
 
-        //Hashing Record Key
         byte[] hash = value.recordKey.toBytes();
         byte[] hashedKey = crypto:hashMd5(hash);
         string hashedToBase16 = hashedKey.toBase16();
 
         if (!recordsMap.hasKey(hashedToBase16) && !recordsMap.hasKey(recordVersion)) {
-            string? failure = "[!] Error: No Results Found [!] \n\n\n";
+            string? failure = "[!] Error: No Results Found [!] \n\n";
             result = caller->send(failure);
             result = caller->complete();
         }
 
-        //If Result Is Found
+
         if (recordsMap.hasKey(hashedToBase16) || recordsMap.hasKey(recordVersion)) {
-            //Find Requested Record
+
             var jsonValue = typedesc<json>.constructFrom(recordsMap[hashedToBase16]);
 
             if (jsonValue is error) {
-                //Send Casting Error As Internal Error
-                string? failure = "[!] Error: No Results Found [!] \n\n\n";
+
+                string? failure = "[!] Error: No Results Found [!] \n\n";
                 result = caller->send(failure);
             } else {
                 json records = jsonValue;
                 payload = records.toString();
-                //Send Response To The Client
+
                 result = caller->send(payload);
                 result = caller->complete();
             }
